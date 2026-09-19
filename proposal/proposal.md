@@ -5,58 +5,58 @@ The proposed primary dataset is the 2023 New York City Yellow Taxi Trip Record D
 
 Official source URLs:
 
-- NYC TLC Trip Record Data
-https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page 
+- NYC TLC Trip Record Data   
+    https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page 
 
-- 2023 Yellow Taxi Trip Data on NYC Open Data
-https://data.cityofnewyork.us/Transportation/2023-Yellow-Taxi-Trip-Data/4b4i-vvec 
+- 2023 Yellow Taxi Trip Data on NYC Open Data  
+    https://data.cityofnewyork.us/Transportation/2023-Yellow-Taxi-Trip-Data/4b4i-vvec 
 
-- Yellow Taxi Trip Data Dictionary
-https://www.nyc.gov/assets/tlc/downloads/pdf/data_dictionary_trip_records_yellow.pdf 
+- Yellow Taxi Trip Data Dictionary  
+    https://www.nyc.gov/assets/tlc/downloads/pdf/data_dictionary_trip_records_yellow.pdf 
 
-- NYC Taxi Zone Lookup Table
-https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv 
+- NYC Taxi Zone Lookup Table  
+    https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv 
 
 The Taxi Zone Lookup CSV originates from the NYC TLC and is linked from the official Trip Record Data page under its taxi zone maps and lookup table resources. The LocationID values in this file correspond to the PULocationID and DOLocationID fields in the trip data.
 
 Direct monthly Parquet files
 The following 12 monthly files will be loaded as the 2023 trip dataset:
 
-- January 2023
-https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-01.parquet 
+- January 2023  
+    https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-01.parquet 
 
-- February 2023
-https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-02.parquet 
+- February 2023  
+    https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-02.parquet 
 
-- March 2023
-https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-03.parquet 
+- March 2023  
+    https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-03.parquet 
 
-- April 2023
-https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-04.parquet 
+- April 2023  
+    https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-04.parquet 
 
-- May 2023
-https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-05.parquet 
+- May 2023  
+    https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-05.parquet 
 
-- June 2023
-https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-06.parquet 
+- June 2023  
+    https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-06.parquet 
 
-- July 2023
-https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-07.parquet 
+- July 2023  
+    https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-07.parquet 
 
-- August 2023
-https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-08.parquet 
+- August 2023  
+    https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-08.parquet 
 
-- September 2023
-https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-09.parquet 
+- September 2023  
+    https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-09.parquet 
 
-- October 2023
-https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-10.parquet 
+- October 2023  
+    https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-10.parquet 
 
-- November 2023
-https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-11.parquet 
+- November 2023  
+    https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-11.parquet 
 
-- December 2023
-https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-12.parquet 
+- December 2023  
+    https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-12.parquet 
 	
 The data is publicly accessible through NYC Open Data and is subject to the applicable NYC Open Data terms of use. The TLC notes that trip records are submitted by authorised technology service providers and may contain data quality limitations. These limitations will be acknowledged and examined during data preparation.
 
@@ -117,6 +117,7 @@ The prefix tpep refers to the TLC’s Taxicab Passenger Enhancement Program nami
 The monthly Parquet files contain minor physical schema differences. Some integer columns use different integer widths, while the airport-fee field appears as airport_fee in January and Airport_fee in later files. Explicit source schemas will therefore be applied before the fields are renamed, cast to the canonical types shown above and combined using unionByName().
 
 The Taxi Zone Lookup Table will be joined to the trip records twice. The pickup join will use PULocationID = LocationID, while the drop-off join will use DOLocationID = LocationID.
+
 The Spark session timezone will be set to America/New York before deriving date, weekday and hourly fields because the TLC timestamps represent New York local time.
 
 ## 4. High cardinality column for partitioning experiments
@@ -124,8 +125,7 @@ The high cardinality numerical column selected for the partitioning experiment i
 
 This field is preferable to route_id for the required hash-versus-range comparison because epoch seconds have a meaningful chronological order. Hash partitioning will distribute timestamp values according to Spark’s hash function, while range partitioning will assign contiguous pickup time ranges to partitions.
 
-The following strategies will be compared using the same number of partitions:
-
+The following strategies will be compared using the same number of partitions:  
 - df.repartition(n, "pickup_epoch_seconds")
 - df.repartitionByRange(n, "pickup_epoch_seconds")
 
@@ -156,8 +156,7 @@ The data is likely to have uneven geographical and temporal distributions. Manha
 The Parquet format supports column pruning and predicate pushdown. Filtering invalid or out-of-scope records before expensive joins and projecting only necessary columns should reduce the amount of data processed in later stages. Join ordering, broadcast joins, persistence and Adaptive Query Execution can then be evaluated using empirical evidence.
 
 ## 7. Why a simple GROUP BY is insufficient
-A single GROUP BY could calculate trip counts or average fares for each route, but it could not answer the complete business question. The proposed query requires:
-
+A single GROUP BY could calculate trip counts or average fares for each route, but it could not answer the complete business question. The proposed query requires:  
 - Two joins to obtain pickup and drop off geographical attributes
 - Duration, time period and route derivations
 - Multi-level route aggregation
@@ -173,6 +172,7 @@ The result therefore depends on multiple transformation, join, aggregation, shuf
 
 ## 8. Potential use for later predictive analysis
 The dataset contains temporal, geographical, categorical and numerical fields that may support later machine learning analysis. 
+
 | Potential task | Potentially useful fields |
 | --- | --- |
 | Trip duration prediction | Pickup timestamp, pickup hour, weekday, pickup and drop off locations, passenger count and rate code |
@@ -184,14 +184,14 @@ The dataset contains temporal, geographical, categorical and numerical fields th
 Predictive modelling will require careful separation of predictor and outcome variables. For example, tpep_dropoff_datetime should not be used to predict trip duration because it directly determines the target. Similarly, tip_amount and total_amount should not be used as predictors when tipping behaviour is the outcome.
 
 ## Reference List
-New York City Taxi and Limousine Commission. TLC Trip Record Data.
+New York City Taxi and Limousine Commission. _TLC Trip Record Data._  
 https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page 
 
-New York City Taxi and Limousine Commission. Yellow Taxi Trip Records Data Dictionary.
+New York City Taxi and Limousine Commission. _Yellow Taxi Trip Records Data Dictionary._  
 https://www.nyc.gov/assets/tlc/downloads/pdf/data_dictionary_trip_records_yellow.pdf
 
-NYC Open Data. 2023 Yellow Taxi Trip Data.
+NYC Open Data. _2023 Yellow Taxi Trip Data._  
 https://data.cityofnewyork.us/Transportation/2023-Yellow-Taxi-Trip-Data/4b4i-vvec 
 
-New York City Taxi and Limousine Commission. Taxi Zone Lookup Table.
+New York City Taxi and Limousine Commission. _Taxi Zone Lookup Table._  
 https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv 
