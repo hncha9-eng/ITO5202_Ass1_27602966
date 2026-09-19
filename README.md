@@ -2,22 +2,19 @@
 
 Student ID: 27602966
 
-Unit: ITO5202 Data Processing for Big Data
-
-Year: 2026
+Unit: ITO5202 Data Processing for Big Data TP5-26
 
 ## Dataset
 
-2023 New York City Yellow Taxi Trip Record Data
+This assessment uses the 2023 NYC TLC Yellow Taxi Trip Record Data together with the Taxi Zone Lookup table.
 
-The dataset is published by the New York City Taxi and Limousine Commission.
+The trip data consists of the twelve monthly 2023 Parquet files. The Taxi Zone Lookup is used to associate pickup and dropoff location IDs with borough and zone information.
 
-Primary source:
-
+Dataset source:  
+- NYC Taxi and Limousine Commission Trip Record Data  
 https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
 
-The analysis also uses the NYC Taxi Zone Lookup Table:
-
+- NYC Taxi Zone Lookup Table  
 https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv
 
 ## Project
@@ -28,15 +25,13 @@ The analysis uses Apache Spark to process the 2023 New York City Yellow Taxi Tri
 
 ## Environment
 
-The assessment is developed using:
+The analysis was completed using the Monash ITO5202 Docker image:   `monashfit/ito5202-pyspark:4`
 
-Python
+Spark was run in local mode with:   `local[2]`
 
-PySpark
+Driver memory:  `2g`
 
-Jupyter Notebook
-
-Apache Spark in local mode
+Docker was configured with approximately 5 GB memory and 2 GB swap.
 
 ## Repository Structure
 
@@ -46,14 +41,18 @@ Apache Spark in local mode
 
 `data/` contains the local dataset files and is excluded from GitHub.
 
+`dag.png` contains the Spark Web UI DAG screenshot used in the notebook.
+
 ## Running the Notebook
 
-1. Install Python, PySpark and Jupyter Notebook.
+1. Download the twelve 2023 Yellow Taxi Parquet files and the Taxi Zone Lookup file into the `data` folder.
 
-2. Start Jupyter Notebook.
+2. Start the ITO5202 Docker container.
 
-3. Open `assessment1.ipynb`.
+3. Open JupyterLab.
 
-4. Run the notebook cells in order.
+4. Open `assessment1.ipynb`.
 
-Dataset files must be downloaded separately from the NYC TLC source and stored in the local `data` folder.
+5. Run the notebook cells in order.
+
+The `data` folder is excluded from Git because the source datasets are too large to store in the repository.
