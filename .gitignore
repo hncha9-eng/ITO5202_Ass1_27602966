@@ -1,7 +1,9 @@
-data/
+data/*
+!data/README.md
+
 .ipynb_checkpoints/
-__pycache__/
-*.pyc
 .ipython/
 .jupyter/
 .local/
+__pycache__/
+*.pyc

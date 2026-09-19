@@ -2,7 +2,9 @@
 
 Student ID: 27602966
 
-Unit: ITO5202 Data Processing for Big Data TP5-26
+Unit: ITO5202 Data Processing for Big Data  
+Teaching Period: TP5  
+Year: 2026
 
 ## Dataset
 
@@ -47,12 +49,24 @@ Docker was configured with approximately 5 GB memory and 2 GB swap.
 
 1. Download the twelve 2023 Yellow Taxi Parquet files and the Taxi Zone Lookup file into the `data` folder.
 
-2. Start the ITO5202 Docker container.
+2. Pull the Monash ITO5202 Docker image:  
+    ```powershell
+    docker pull monashfit/ito5202-pyspark:4
+    ```
+3. From the repository folder, start the Docker container:  
+    ```
+    docker run --rm --name ito5202-spark 
+      -p 5202:5202 
+      -p 4040:4040 
+      -v "${PWD}:/home/student/work" 
+      -w /home/student/work 
+      --entrypoint /bin/bash 
+      monashfit/ito5202-pyspark:4 
+      -lc "jupyter lab --ip=0.0.0.0 --port=5202 --no-browser"
+    ```
 
-3. Open JupyterLab.
+4. Open the JupyterLab URL shown in the terminal.
 
-4. Open `assessment1.ipynb`.
-
-5. Run the notebook cells in order.
+5. Open assessment1.ipynb and run the notebook cells in order.
 
 The `data` folder is excluded from Git because the source datasets are too large to store in the repository.
